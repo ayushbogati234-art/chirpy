@@ -1,20 +1,22 @@
 package main
 
 import (
-	"log"
 	"net/http"
 )
 
 func main() {
-	// Create a new ServeMux
 	mux := http.NewServeMux()
 
-	// Create the server
+	// File server serving current directory
+	fileServer := http.FileServer(http.Dir("."))
+
+	// Handle root path
+	mux.Handle("/", fileServer)
+
 	server := &http.Server{
 		Addr:    ":8080",
 		Handler: mux,
 	}
 
-	// Start the server
-	log.Fatal(server.ListenAndServe())
+	server.ListenAndServe()
 }
