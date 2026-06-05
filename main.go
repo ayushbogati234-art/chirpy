@@ -1,22 +1,25 @@
 package main
 
 import (
+	"log"
 	"net/http"
 )
 
 func main() {
-	mux := http.NewServeMux()
+	// Serve static files from ./assets at /assets/
+	fs := http.FileServer(http.Dir("./assets"))
+	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
 
-	// File server serving current directory
-	fileServer := http.FileServer(http.Dir("."))
+	// Serve index.html at root
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "index.html")
+	})
 
-	// Handle root path
-	mux.Handle("/", fileServer)
+	port := ":8080"
+	log.Println("Server running on http://localhost" + port)
 
-	server := &http.Server{
-		Addr:    ":8080",
-		Handler: mux,
+	err := http.ListenAndServe(port, nil)
+	if err != nil {
+		log.Fatal(err)
 	}
-
-	server.ListenAndServe()
 }
