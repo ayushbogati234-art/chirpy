@@ -1,17 +1,17 @@
--- name: CreateUser :one
 INSERT INTO users (
     id,
     created_at,
     updated_at,
-    email
+    email,
+    hashed_password,
+    is_chirpy_red
 )
 VALUES (
     gen_random_uuid(),
     NOW(),
     NOW(),
-    $1
+    $1,
+    $2,
+    FALSE
 )
-RETURNING *;
-
--- name: DeleteAllUsers :exec
-DELETE FROM users;
+RETURNING id, email, created_at, updated_at, is_chirpy_red, hashed_password;
